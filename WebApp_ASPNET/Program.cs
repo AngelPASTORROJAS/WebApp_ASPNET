@@ -1,7 +1,22 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using WebApp_ASPNET.Interfaces;
+using WebApp_ASPNET.repositories;
+using WebApp_ASPNET.Services;
+
 var builder = WebApplication.CreateBuilder(args);   // Création de la classe WebApplicationBuilder
 
 // Add services to the container.
 builder.Services.AddControllers();              // Ajout des services dans les controllers
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IContactRepository, ContactRepository>();
+builder.Services.AddScoped<IContactService, ContactService>();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+});
 
 // Configurer Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();     // Ajout des points d'entrée d'API
